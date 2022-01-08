@@ -4,8 +4,8 @@
 const controller = require('egg').Controller
 
 class indexController extends controller {
-    async init() {
-        const {ctx} = this
+  async init() {
+    const {ctx} = this
         ctx.body = '<h1>i am lzj</h1>'
     }
 

@@ -24,18 +24,24 @@ module.exports = appInfo => {
       enable : false
     }
   }
-
-  //mysql配置
   config.mysql = {
-    app:true,//是否挂载到app下
-    agent:false, //是否挂载代理
-    client:{
-      host:'192.168.18.103',
-      port:'3306',
-      user:'root',
-      password:'123456',
-      database: 'L_loginInformation'
-    }
+    // 单数据库信息配置
+    client: {
+      // host
+      host: 'localhost',
+      // 端口号
+      port: '3306',
+      // 用户名
+      user: 'root',
+      // 密码
+      password: '123456',
+      // 数据库名
+      database: 'L_loginInformation',
+    },
+    // 是否加载到 app 上，默认开启
+    app: true,
+    // 是否加载到 agent 上，默认关闭
+    agent: false,
   }
 
   // add your user config here
@@ -48,3 +54,5 @@ module.exports = appInfo => {
     ...userConfig,
   };
 };
+
+
