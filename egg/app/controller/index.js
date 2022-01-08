@@ -4,8 +4,8 @@
 const controller = require('egg').Controller
 
 class indexController extends controller {
-  async init() {
-    const {ctx} = this
+    async init() {
+        const {ctx} = this
         ctx.body = '<h1>i am lzj</h1>'
     }
 
@@ -25,10 +25,10 @@ class indexController extends controller {
     async add() {
         const {ctx} = this
         ctx.body = {
-                status:200,
-                message: 'ok',
-                data:[]
-            }
+            status: 200,
+            message: 'ok',
+            data: []
+        }
 
     }
 }
