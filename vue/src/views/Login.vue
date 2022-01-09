@@ -77,7 +77,7 @@ export default {
     // 变量定义
     const svgIcon = passwordSvg;
     const loading = ref(false);
-    const remenberPassword = ref(true);
+    const remenberPassword = ref(false);
     const loginRules = {
       username: [
         { required: true, trigger: "blur", message: "用户名不能为空" },
