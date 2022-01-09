@@ -15,7 +15,8 @@
     "vuex": "^4.0.0-0",
     "axios": "^0.24.0",
     "dayjs": "^1.10.7",
-    "qs": "^6.10.2"
+    "qs": "^6.10.2",
+    "js-cookie": "^2.2.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

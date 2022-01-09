@@ -7,7 +7,7 @@ const duration = 3 * 1000
 
 function request(axiosConfig) {
     const service = axios.create({
-        baseURL: process.env.VUE_APP_API_BASE, // 设置统一的请求前缀
+        baseURL:'/api',// 设置统一的请求前缀
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },

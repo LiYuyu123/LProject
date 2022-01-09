@@ -5,9 +5,9 @@ import request from './request'
  * @param 无
  * @returns
  */
-export function test() {
+export function getLogin() {
     return request({
         method: 'GET',
-        url: '/test',
+        url: '/getLogin',
     })
 }
