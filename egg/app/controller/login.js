@@ -7,14 +7,15 @@ class loginController extends controller {
     async set() {
         const {ctx} = this;
         const res = await ctx.service.dataBase.setLogin()
-        ctx.body = '注册：' + JSON.stringify(res);
+        ctx.body = JSON.stringify(res);
     }
 
     //登录信息
     async get() {
         const {ctx} = this
         const res = await ctx.service.dataBase.getLogin()
-        ctx.body = '登陆信息:' + JSON.stringify(res)
+        const resData = res !== null ? { code: 0, data: res, message: '成功' } : {code: 1, data: [], message: '失败'}
+        ctx.body =JSON.stringify(resData)
     }
 }
 

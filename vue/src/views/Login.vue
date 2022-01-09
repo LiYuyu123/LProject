@@ -33,6 +33,7 @@
             name="password"
             tabindex="2"
             auto-complete="on"
+            @keyup.enter="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
           <i class="el-icon-view" v-if="passwordType !== 'password'"></i>
@@ -46,6 +47,7 @@
           :loading="loading"
           type="primary"
           style="width: 100%; margin-bottom: 30px"
+          @click="handleLogin"
       >
         登录
       </el-button>
@@ -61,6 +63,7 @@ import  {getLogin} from "../http";
 import * as cookies from "../assets/cookies";
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
+import {ElMessage} from "element-plus";
 export default {
   name: "Login",
   setup() {
@@ -97,6 +100,33 @@ export default {
       unref(pwdInput).focus();
     };
     // 登录
+    const handleLogin= () =>{
+      const form = unref(loginForm)
+      form.validate((valid)=>{
+        if(valid) {
+          getLogin({
+            data: {
+              username: loginData.username.trim(),
+              password: loginData.password,
+            }
+          }).then((res)=>{
+            console.log(res[0].name === loginData.username.trim())
+            if(res[0].name === loginData.username.trim() && res[0].possword === loginData.password) {
+              router.push({ path: "/'" });
+            }else {
+              ElMessage({
+                showClose: true,
+                message: '密码或用户名错误',
+                type: 'error',
+                duration,
+              })
+            }
+          })
+        }
+      })
+      console.log( )
+    }
+
     // const handleLogin = () => {
     //   const form = unref(loginForm);
     //   form.validate((valid) => {
@@ -137,6 +167,7 @@ export default {
     //     }
     //   });
     // };
+
     onMounted(()=>{
       getLogin().then(res=>{
         console.log(res)
@@ -155,7 +186,7 @@ export default {
       passwordType,
       // 事件
       showPwd,
-      // handleLogin,
+      handleLogin,
       loading,
       remenberPassword,
     };

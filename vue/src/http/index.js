@@ -1,13 +1,14 @@
 import request from './request'
 
 /**
- * @description 测试代码
- * @param 无
+ * @description 登录
  * @returns
+ * @param data: 上传数据
  */
-export function getLogin() {
+export function getLogin(data= {}) {
     return request({
-        method: 'GET',
+        method: 'post',
         url: '/getLogin',
+        data,
     })
 }

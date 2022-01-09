@@ -7,7 +7,8 @@ class dbService extends Service {
     async getLogin() {
         try {
             const app = this.app
-            return await app.mysql.query('SELECT * FROM L_login')
+            const { username,password} = this.ctx.request.body.data
+            return await app.mysql.query('SELECT * FROM L_login WHERE name = ? AND possword = ?' ,[username,password])
         } catch (error) {
             console.log(error)
             return null
