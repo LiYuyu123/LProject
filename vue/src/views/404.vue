@@ -29,7 +29,7 @@
         <div class="content__info">
           请检查您输入的网址是否正确，点击以下按钮返回主页
         </div>
-        <router-link :to="{ path: '/' }" class="content__return-home">
+        <router-link :to="{ path: '/home' }" class="content__return-home">
           返回首页
         </router-link>
       </div>

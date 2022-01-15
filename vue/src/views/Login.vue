@@ -56,16 +56,17 @@
 </template>
 
 <script>
-import { passwordSvg } from "../assets/images/login/svg.js";
+
+import {passwordSvg} from "../assets/images/login/svg.js";
 import {ref, reactive, unref, onMounted} from "vue";
 // import { userLogin } from "@/http/api";
-import  {getLogin} from "../http";
+import {getLogin} from "../http";
 import * as cookies from "../assets/cookies";
-import { useRouter, useRoute } from "vue-router";
-import { useStore } from "vuex";
-import {ElMessage} from "element-plus";
+import {useRouter, useRoute} from "vue-router";
+import {useStore} from "vuex";
+
+
 export default {
-  name: "Login",
   setup() {
     const router = useRouter();
     const route = useRoute();
@@ -80,11 +81,11 @@ export default {
     const remenberPassword = ref(false);
     const loginRules = {
       username: [
-        { required: true, trigger: "blur", message: "用户名不能为空" },
+        {required: true, trigger: "blur", message: "用户名不能为空"},
       ],
       password: [
-        { required: true, trigger: "blur", message: "密码不能为空" },
-        { min: 6, message: "密码要大于6位", trigger: "blur" },
+        {required: true, trigger: "blur", message: "密码不能为空"},
+        {min: 6, message: "密码要大于6位", trigger: "blur"},
       ],
     };
     const user = cookies.getUsername() || "";
@@ -100,31 +101,30 @@ export default {
       unref(pwdInput).focus();
     };
     // 登录
-    const handleLogin= () =>{
+    const handleLogin = () => {
       const form = unref(loginForm)
-      form.validate((valid)=>{
-        if(valid) {
+      form.validate((valid) => {
+        if (valid) {
           getLogin({
             data: {
               username: loginData.username.trim(),
               password: loginData.password,
             }
-          }).then((res)=>{
-            console.log(res[0].name === loginData.username.trim())
-            if(res[0].name === loginData.username.trim() && res[0].possword === loginData.password) {
-              router.push({ path: "/'" });
-            }else {
-              ElMessage({
-                showClose: true,
-                message: '密码或用户名错误',
-                type: 'error',
-                duration,
-              })
+          }).then((res) => {
+            console.log(res)
+            console.log(res.res === 0)
+            if (res.res === 0) {
+              cookies.setToken(res.token);
+              router.push({ path: "/" });
+              if(routeFrom){
+                router.push({ name: routeFrom });
+              }else {
+                router.push({ path: "/" });
+              }
             }
           })
         }
       })
-      console.log( )
     }
 
     // const handleLogin = () => {
@@ -167,14 +167,9 @@ export default {
     //     }
     //   });
     // };
-
-    onMounted(()=>{
-      getLogin().then(res=>{
-        console.log(res)
-      }).catch(error=>{
-        console.log(error)
-      })
-    })
+ onMounted(()=>{
+   console.log(route.query)
+ })
     return {
       // doom 相关
       loginForm,
@@ -205,12 +200,14 @@ export default {
     color: @cursor;
   }
 }
+
 /* reset element-ui css */
 .login-container {
   .el-input {
     display: inline-block;
     height: 48px;
     width: 85%;
+
     input {
       background: transparent;
       border: 0px;
@@ -220,12 +217,14 @@ export default {
       color: @light_gray;
       height: 48px;
       caret-color: @cursor;
+
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px @bg inset !important;
         -webkit-text-fill-color: @cursor !important;
       }
     }
   }
+
   .el-form-item {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.1);
@@ -244,6 +243,7 @@ export default {
   width: 100%;
   background-color: @bg;
   overflow: hidden;
+
   .login-form {
     position: relative;
     width: 520px;
@@ -252,16 +252,19 @@ export default {
     margin: 0 auto;
     overflow: hidden;
   }
+
   .tips {
     font-size: 14px;
     color: #fff;
     margin-bottom: 10px;
+
     span {
       &:first-of-type {
         margin-right: 16px;
       }
     }
   }
+
   i {
     margin-left: 15px;
     font-size: 16px;
@@ -270,8 +273,10 @@ export default {
     width: 16px;
     display: inline-block;
   }
+
   .title-container {
     position: relative;
+
     .title {
       font-size: 26px;
       color: @light_gray;
@@ -280,6 +285,7 @@ export default {
       font-weight: bold;
     }
   }
+
   .show-pwd {
     position: absolute;
     height: 100%;
@@ -289,19 +295,23 @@ export default {
     color: @dark_gray;
     cursor: pointer;
     user-select: none;
+
     .pwd-hidden {
       width: 16px;
       height: 16px;
+
       :deep(#icon-eye) {
         fill: currentColor;
         color: @dark_gray;
       }
     }
   }
+
   .pwd-checkbox {
     text-align: left;
     padding-left: 10px;
     padding-bottom: 30px;
+
     :deep(.el-checkbox) {
       color: #fff;
     }
