@@ -1,5 +1,13 @@
 <template>
   <div class="login-container">
+    <div class="title-wrapper">
+      <div :class="['title-container',{'active': selectIndex === index}]"
+           v-for="(i,index) in selectData"
+           :key="index" @click="selectClick(index)">
+        <div class="title">{{ i.name }}</div>
+      </div>
+    </div>
+<!--    登录-->
     <el-form
         ref="loginForm"
         :model="loginData"
@@ -7,10 +15,8 @@
         class="login-form"
         auto-complete="on"
         label-position="left"
+        v-show="selectShow"
     >
-      <div class="title-container">
-        <h3 class="title">登录</h3>
-      </div>
       <el-form-item prop="username">
         <i class="el-icon-user-solid"></i>
         <el-input
@@ -35,6 +41,7 @@
             auto-complete="on"
             @keyup.enter="handleLogin"
         />
+<!--      @keyup.enter.native   键盘回车事件-->
         <span class="show-pwd" @click="showPwd">
           <i class="el-icon-view" v-if="passwordType !== 'password'"></i>
           <div class="pwd-hidden" v-else v-html="svgIcon"></div>
@@ -52,6 +59,67 @@
         登录
       </el-button>
     </el-form>
+
+<!--    注册-->
+    <el-form
+        :model="registerData"
+        :rules="registerRules"
+        class="login-form"
+        auto-complete="on"
+        label-position="left"
+        v-show="!selectShow"
+    >
+      <el-form-item prop="username">
+        <i class="el-icon-user-solid"></i>
+        <el-input
+            v-model="registerData.username"
+            placeholder="请输入用户名"
+            name="username"
+            type="text"
+            tabindex="1"
+            auto-complete="on"
+        />
+      </el-form-item>
+      <el-form-item prop="passwordOne">
+        <i class="el-icon-lock"></i>
+        <el-input
+            v-model="registerData.passwordOne"
+            :key="passwordType"
+            :type="passwordType"
+            placeholder="请输入密码"
+            name="password1"
+            tabindex="2"
+            auto-complete="on"
+        />
+        <span class="show-pwd" @click="showPwd">
+          <i class="el-icon-view" v-if="passwordType !== 'password'"></i>
+          <div class="pwd-hidden" v-else v-html="svgIcon"></div>
+        </span>
+      </el-form-item>
+      <el-form-item prop="passwordTwo">
+        <i class="el-icon-lock"></i>
+        <el-input
+            v-model="registerData.passwordTwo"
+            :key="passwordType"
+            :type="passwordType"
+            placeholder="请再次输入密码"
+            name="password2"
+            tabindex="2"
+            auto-complete="on"
+        />
+        <span class="show-pwd" @click="showPwd">
+          <i class="el-icon-view" v-if="passwordType !== 'password'"></i>
+          <div class="pwd-hidden" v-else v-html="svgIcon"></div>
+        </span>
+      </el-form-item>
+      <el-button
+          type="primary"
+          style="width: 100%; margin-bottom: 30px"
+          @click="registerClick"
+      >
+        注册
+      </el-button>
+    </el-form>
   </div>
 </template>
 
@@ -59,11 +127,12 @@
 
 import {passwordSvg} from "../assets/images/login/svg.js";
 import {ref, reactive, unref, onMounted} from "vue";
-// import { userLogin } from "@/http/api";
+
 import {getLogin} from "../http";
 import * as cookies from "../assets/cookies";
 import {useRouter, useRoute} from "vue-router";
 import {useStore} from "vuex";
+import {ElMessage} from "element-plus";
 
 
 export default {
@@ -88,88 +157,105 @@ export default {
         {min: 6, message: "密码要大于6位", trigger: "blur"},
       ],
     };
+    const registerData =  reactive({
+      username: '',
+      passwordOne: '',
+      passwordTwo: '',
+    })
+
+    //验证两个密码是否相同'
+    const validatePass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'));
+      } else if (value !== registerData.passwordOne) {
+        callback(new Error('两次输入密码不一致!'));
+      } else {
+        callback();
+      }
+    };
+
+    const registerRules = reactive({
+      username: [
+        {required: true, trigger: "blur", message: "用户名不能为空"},
+      ],
+      passwordOne: [
+        {required: true, trigger: "blur", message: "密码不能为空"},
+        {min: 6, message: "密码要大于6位", trigger: "blur"},
+      ],
+      passwordTwo: [
+        {required: true, trigger: "blur", message: "密码不能为空"},
+        {min: 6, message: "密码要大于6位", trigger: "blur"},
+        {validator:validatePass,trigger: "blur"}
+      ],
+    })
+
     const user = cookies.getUsername() || "";
     const pwd = cookies.getPassword() || "";
     const loginData = reactive({
       username: user,
       password: pwd,
     });
+    const selectIndex = ref(0)
+    const selectData = ref([{name: '登录'}, {name: '注册'}])
+    const selectShow = ref(true)
+
     const passwordType = ref("password");
     // 密码明文点击事件
     const showPwd = () => {
       passwordType.value = passwordType.value === "password" ? "" : "password";
       unref(pwdInput).focus();
     };
+
+    const selectClick = (index) => {
+      selectIndex.value = index
+      selectShow.value = !selectShow.value
+    }
+
     // 登录
     const handleLogin = () => {
       const form = unref(loginForm)
       form.validate((valid) => {
         if (valid) {
+          loading.value = true;
           getLogin({
             data: {
               username: loginData.username.trim(),
               password: loginData.password,
             }
           }).then((res) => {
-            console.log(res)
-            console.log(res.res === 0)
             if (res.res === 0) {
               cookies.setToken(res.token);
-              router.push({ path: "/" });
-              if(routeFrom){
-                router.push({ name: routeFrom });
-              }else {
-                router.push({ path: "/" });
+              //记住密码功能
+              if (remenberPassword.value) {
+                cookies.setUsername(loginData.username.trim());
+                cookies.setPassword(loginData.password);
+              } else {
+                cookies.removeUsername();
+                cookies.removePassword();
               }
+              if (routeFrom) {
+                router.push({name: routeFrom});
+              } else {
+                router.push({path: "/"});
+              }
+            } else {
+              ElMessage({
+                showClose: true,
+                message: '密码或用户名错误',
+                type: 'error',
+              })
             }
-          })
+          }).finally(() => {
+            loading.value = false;
+          });
         }
       })
     }
-
-    // const handleLogin = () => {
-    //   const form = unref(loginForm);
-    //   form.validate((valid) => {
-    //     if (valid) {
-    //       const a = 1;
-    //       if (a === 1) {
-    //         router.push({ path: "/" });
-    //         console.log(1);
-    //         return;
-    //       }
-    //       loading.value = true;
-    //       userLogin({
-    //         data: {
-    //           username: loginData.username.trim(),
-    //           password: loginData.password,
-    //         },
-    //       })
-    //           .then((msg) => {
-    //             cookies.setToken(msg.token);
-    //             store.dispatch("setRID", msg.rid);
-    //             // 记住密码功能
-    //             if (remenberPassword.value) {
-    //               cookies.setUsername(loginData.username.trim());
-    //               cookies.setPassword(loginData.password);
-    //             } else {
-    //               cookies.removeUsername();
-    //               cookies.removePassword();
-    //             }
-    //             if (routeFrom) {
-    //               router.push({ name: routeFrom });
-    //             } else {
-    //               router.push({ path: "/" });
-    //             }
-    //           })
-    //           .finally(() => {
-    //             loading.value = false;
-    //           });
-    //     }
-    //   });
-    // };
- onMounted(()=>{
-   console.log(route.query)
- })
+    //注册
+   const registerClick = () =>{
+      console.log(registerData)
+     console.log(registerData.passwordOne)
+   }
     return {
       // doom 相关
       loginForm,
@@ -184,6 +270,13 @@ export default {
       handleLogin,
       loading,
       remenberPassword,
+      selectIndex,
+      selectData,
+      selectShow,
+      selectClick,
+      registerData,
+      registerRules,
+      registerClick
     };
   },
 };
@@ -248,7 +341,7 @@ export default {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
+    padding: 0 35px 0;
     margin: 0 auto;
     overflow: hidden;
   }
@@ -273,19 +366,32 @@ export default {
     width: 16px;
     display: inline-block;
   }
-
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: @light_gray;
-      margin: 0px auto 40px auto;
+  .title-wrapper {
+    display: flex;
+    margin: 20px 0;
+    justify-content: center;
+    padding-top: 10%;
+    .title-container {
+      width: 225px;
+      border:1px solid #3e4957;
       text-align: center;
-      font-weight: bold;
+      .title {
+        font-size: 26px;
+        color: #3e4957;
+        font-weight: bold;
+      }
+      &:nth-child(1){
+        border-right: none;
+      }
+      &.active {
+        background: #409eff;
+        border: 1px solid #409eff;
+        .title {
+          color: @light_gray;
+        }
+      }
     }
   }
-
   .show-pwd {
     position: absolute;
     height: 100%;
