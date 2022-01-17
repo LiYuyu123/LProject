@@ -9,7 +9,7 @@ class loginController extends controller {
     async set() {
         const {ctx} = this;
         const res = await ctx.service.dataBase.setLogin()
-        ctx.body = JSON.stringify(res);
+        ctx.body = JSON.stringify({ code: 0, data:res, message: '成功' });
     }
 
     //登录信息

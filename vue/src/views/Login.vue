@@ -62,6 +62,7 @@
 
 <!--    注册-->
     <el-form
+        ref="setLoginFrom"
         :model="registerData"
         :rules="registerRules"
         class="login-form"
@@ -128,12 +129,12 @@
 import {passwordSvg} from "../assets/images/login/svg.js";
 import {ref, reactive, unref, onMounted} from "vue";
 
-import {getLogin} from "../http";
+import {getLogin,setLogin} from "../http";
 import * as cookies from "../assets/cookies";
 import {useRouter, useRoute} from "vue-router";
 import {useStore} from "vuex";
 import {ElMessage} from "element-plus";
-
+import {debounce} from "../assets/js/config";
 
 export default {
   setup() {
@@ -143,6 +144,7 @@ export default {
     const store = useStore();
     // dom映射变量定义
     const loginForm = ref(null);
+    const setLoginFrom = ref(null)
     const pwdInput = ref(null);
     // 变量定义
     const svgIcon = passwordSvg;
@@ -212,53 +214,79 @@ export default {
     }
 
     // 登录
-    const handleLogin = () => {
-      const form = unref(loginForm)
-      form.validate((valid) => {
-        if (valid) {
-          loading.value = true;
-          getLogin({
-            data: {
+    const handleLogin = debounce(()=>{
+        const form = unref(loginForm)
+        form.validate((valid) => {
+          if (valid) {
+            loading.value = true;
+            getLogin({
               username: loginData.username.trim(),
               password: loginData.password,
-            }
-          }).then((res) => {
-            if (res.res === 0) {
-              cookies.setToken(res.token);
-              //记住密码功能
-              if (remenberPassword.value) {
-                cookies.setUsername(loginData.username.trim());
-                cookies.setPassword(loginData.password);
+            }).then((res) => {
+              if (res.res === 0) {
+                cookies.setToken(res.token);
+                //记住密码功能
+                if (remenberPassword.value) {
+                  cookies.setUsername(loginData.username.trim());
+                  cookies.setPassword(loginData.password);
+                } else {
+                  cookies.removeUsername();
+                  cookies.removePassword();
+                }
+                if (routeFrom) {
+                  router.push({name: routeFrom});
+                } else {
+                  router.push({path: "/"});
+                }
               } else {
-                cookies.removeUsername();
-                cookies.removePassword();
+                ElMessage({
+                  showClose: true,
+                  message: '密码或用户名错误',
+                  type: 'error',
+                })
               }
-              if (routeFrom) {
-                router.push({name: routeFrom});
-              } else {
-                router.push({path: "/"});
-              }
-            } else {
-              ElMessage({
-                showClose: true,
-                message: '密码或用户名错误',
-                type: 'error',
-              })
-            }
-          }).finally(() => {
-            loading.value = false;
-          });
-        }
-      })
-    }
+            }).finally(() => {
+              loading.value = false;
+            });
+          }
+        })
+      },1000)
+
     //注册
-   const registerClick = () =>{
-      console.log(registerData)
-     console.log(registerData.passwordOne)
-   }
+   const registerClick = debounce(()=>{
+        const from =unref(setLoginFrom)
+        from.validate((valid)=>{
+          if(valid){
+            setLogin({
+              username: registerData.username.trim(),
+              password: registerData.passwordTwo,
+            }).then((res)=>{
+              if(res.serverStatus === 2) {
+                from.resetFields()
+                ElMessage({
+                  showClose: true,
+                  message: '注册成功',
+                  type: 'success',
+                })
+              } else {
+                from.resetFields()
+                ElMessage({
+                  showClose: true,
+                  message: res,
+                  type: 'error',
+                })
+              }
+            }).catch(error=>{
+              console.log(error)
+            }).finally(() => {
+            });
+          }
+        })
+      },1000)
     return {
       // doom 相关
       loginForm,
+      setLoginFrom,
       pwdInput,
       // 变量
       svgIcon,

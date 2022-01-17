@@ -7,7 +7,7 @@ class dbService extends Service {
     async getLogin() {
         try {
             const app = this.app
-            const { username,password} = this.ctx.request.body.data
+            const { username,password} = this.ctx.request.body
             return await app.mysql.query('SELECT * FROM L_login WHERE name = ? AND possword = ?' ,[username,password])
         } catch (error) {
             console.log(error)
@@ -19,9 +19,9 @@ class dbService extends Service {
     async setLogin() {
         try {
             const app = this.app
-            const name = 'yyy'
-            const possword = '2222'
-            return await app.mysql.query('INSERT INTO L_login VALUES (?,?)', [name, possword])
+            const {username,password} = this.ctx.request.body
+            const getData =  await app.mysql.query('SELECT name FROM L_login WHERE name = ? ',[username])
+            return  getData.length > 0 ?  '该用户名已存在': await app.mysql.query('INSERT INTO L_login VALUES (?,?) ', [username,password])
         } catch (error) {
             console.log(error)
             return null

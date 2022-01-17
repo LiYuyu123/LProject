@@ -12,3 +12,17 @@ export function getLogin(data= {}) {
         data,
     })
 }
+
+
+/**
+ * @description 注册
+ * @returns
+ * @param data: 上传数据
+ */
+export function setLogin(data= {}) {
+    return request({
+        method: 'post',
+        url: '/setLogin',
+        data,
+    })
+}
