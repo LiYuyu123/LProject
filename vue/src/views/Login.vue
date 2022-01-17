@@ -15,7 +15,7 @@
         class="login-form"
         auto-complete="on"
         label-position="left"
-        v-show="selectShow"
+        v-show="selectIndex === 0"
     >
       <el-form-item prop="username">
         <i class="el-icon-user-solid"></i>
@@ -68,7 +68,7 @@
         class="login-form"
         auto-complete="on"
         label-position="left"
-        v-show="!selectShow"
+        v-show="selectIndex === 1"
     >
       <el-form-item prop="username">
         <i class="el-icon-user-solid"></i>
@@ -199,7 +199,6 @@ export default {
     });
     const selectIndex = ref(0)
     const selectData = ref([{name: '登录'}, {name: '注册'}])
-    const selectShow = ref(true)
 
     const passwordType = ref("password");
     // 密码明文点击事件
@@ -210,7 +209,6 @@ export default {
 
     const selectClick = (index) => {
       selectIndex.value = index
-      selectShow.value = !selectShow.value
     }
 
     // 登录
@@ -300,7 +298,6 @@ export default {
       remenberPassword,
       selectIndex,
       selectData,
-      selectShow,
       selectClick,
       registerData,
       registerRules,
