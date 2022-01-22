@@ -21,9 +21,9 @@ import * as cookies from "../assets/cookies";
  */
 const routes = [
     {
-        path: '/',
+        path: '/home',
         hidden: true,
-        component: () => import('../views/Home'),
+        component: () => import('../layout/Layout.vue'),
     },
     {
         path: '/login',
