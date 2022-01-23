@@ -128,7 +128,7 @@
 
 import {passwordSvg} from "../assets/images/login/svg.js";
 import {ref, reactive, unref, onMounted} from "vue";
-
+import jwt from 'jsonwebtoken'
 import {getLogin,setLogin} from "../http";
 import * as cookies from "../assets/cookies";
 import {useRouter, useRoute} from "vue-router";
@@ -221,8 +221,11 @@ export default {
               username: loginData.username.trim(),
               password: loginData.password,
             }).then((res) => {
+              console.log(res)
+              loading.value = false;
               if (res.res === 0) {
                 cookies.setToken(res.token);
+                console.log(jwt.decode(res.token))
                 //记住密码功能
                 if (remenberPassword.value) {
                   cookies.setUsername(loginData.username.trim());
@@ -244,7 +247,6 @@ export default {
                 })
               }
             }).finally(() => {
-              loading.value = false;
             });
           }
         })
@@ -255,10 +257,12 @@ export default {
         const from =unref(setLoginFrom)
         from.validate((valid)=>{
           if(valid){
+            loading.value = true;
             setLogin({
               username: registerData.username.trim(),
               password: registerData.passwordTwo,
             }).then((res)=>{
+              loading.value = false;
               if(res.serverStatus === 2) {
                 from.resetFields()
                 ElMessage({

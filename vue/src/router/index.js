@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import * as cookies from "../assets/cookies";
+import Layout from "../layout/Layout";
 /**
  * Note: 路由配置项
  *
@@ -21,9 +22,8 @@ import * as cookies from "../assets/cookies";
  */
 const routes = [
     {
-        path: '/home',
-        hidden: true,
-        component: () => import('../layout/Layout.vue'),
+        path: '/',
+        component: Layout,
     },
     {
         path: '/login',
@@ -39,7 +39,8 @@ const routes = [
 
 
 const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL),
+    scrollBehavior: () => ({ top: 0 }),
+    history: createWebHistory(process.env.VUE_APP_PUBLIC_PATH),
     routes
 })
 

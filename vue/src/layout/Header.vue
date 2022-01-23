@@ -8,7 +8,7 @@
             <div class="user-name">李子杰</div>
            <template #dropdown>
              <el-dropdown-menu>
-               <el-dropdown-item>退出</el-dropdown-item>
+               <el-dropdown-item @click="exit">退出</el-dropdown-item>
                </el-dropdown-menu>
            </template>
          </el-dropdown>
@@ -18,17 +18,29 @@
 
 <script>
 import  {reactive} from 'vue'
+import * as cookies from "../assets/cookies";
+import {useRouter} from "vue-router";
 export default {
  setup(){
+
+   const router = useRouter()
    const state = reactive({
      circleUrl:
          'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
    })
    const  exit = () => {
-
+     ElMessageBox.confirm('确定退出吗','退出',{
+       confirmButtonText:'确定',
+       cancelButtonText:'取消',
+       type:'warning'
+     }).then(()=>{
+       cookies.removeToken()
+       router.push('/login')
+     })
    }
    return {
-    state
+    state,
+     exit
    }
  }
 }

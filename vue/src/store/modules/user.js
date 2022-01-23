@@ -1,14 +1,14 @@
 const state = {
-    rid:'',
+    user:'',
 }
 const mutations = {
-    SET_RID:(state,rid)=>{
-        state.rid = rid
+    SET_USER:(state,user)=>{
+        state.user = user
     }
 }
 const actions = {
-    setRid({commit},rid) {
-        commit('SET_RID',rid)
+    setUSER({commit},user) {
+        commit('SET_USER',user)
     }
 }
 
