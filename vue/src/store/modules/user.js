@@ -2,13 +2,13 @@ const state = {
     user:'',
 }
 const mutations = {
-    SET_USER:(state,user)=>{
-        state.user = user
+    SET_USER:(state,name)=>{
+        state.user = name
     }
 }
 const actions = {
-    setUSER({commit},user) {
-        commit('SET_USER',user)
+    setUSER({commit},name) {
+        commit('SET_USER',name)
     }
 }
 

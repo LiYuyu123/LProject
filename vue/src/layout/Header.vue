@@ -5,7 +5,7 @@
       <div class="user-info">
          <el-dropdown>
            <el-avatar :size="25" :src="state.circleUrl"></el-avatar>
-            <div class="user-name">李子杰</div>
+            <div class="user-name">{{name}}</div>
            <template #dropdown>
              <el-dropdown-menu>
                <el-dropdown-item @click="exit">退出</el-dropdown-item>
@@ -17,17 +17,21 @@
 </template>
 
 <script>
-import  {reactive} from 'vue'
+import {onMounted, reactive, ref} from 'vue'
 import * as cookies from "../assets/cookies";
 import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 export default {
  setup(){
 
    const router = useRouter()
+   const store = useStore()
    const state = reactive({
      circleUrl:
          'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
    })
+   //用户名字
+   const name = ref(store.state.user.user)
    const  exit = () => {
      ElMessageBox.confirm('确定退出吗','退出',{
        confirmButtonText:'确定',
@@ -38,8 +42,12 @@ export default {
        router.push('/login')
      })
    }
+   onMounted(()=>{
+     console.log(name.value)
+   })
    return {
     state,
+     name,
      exit
    }
  }

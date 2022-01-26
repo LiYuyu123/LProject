@@ -224,8 +224,8 @@ export default {
               console.log(res)
               loading.value = false;
               if (res.res === 0) {
-                cookies.setToken(res.token);
-                console.log(jwt.decode(res.token))
+                //要加模块名
+                store.dispatch('user/setUSER',jwt.decode(res.token).name)
                 //记住密码功能
                 if (remenberPassword.value) {
                   cookies.setUsername(loginData.username.trim());

@@ -19,7 +19,7 @@ class loginController extends controller {
         const res = dbData !== null && dbData.length >0 ? dbData : {name:'',possword:''}
         //token
         //TODO 前端收到的token,解密出来有问题
-        const token = jwt.sign({name:res.name,password:res.possword},'lzjyyy',{expiresIn:'50000s'})
+        const token = jwt.sign({name:res[0].name},'lzjyyy',{expiresIn:'50000s'})
 
         const resData = { code: 0, data: {token,res: res.name !== '' ? 0 : 1 } , message: '成功' }
         ctx.body =JSON.stringify(resData)
