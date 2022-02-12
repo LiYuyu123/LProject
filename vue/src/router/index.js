@@ -23,6 +23,8 @@ import Layout from "../layout/Layout";
 const routes = [
     {
         path: '/',
+        hidden: true,
+        name:'home',
         component: Layout,
     },
     {

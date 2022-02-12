@@ -128,7 +128,6 @@
 
 import {passwordSvg} from "../assets/images/login/svg.js";
 import {ref, reactive, unref, onMounted} from "vue";
-import jwt from 'jsonwebtoken'
 import {getLogin,setLogin} from "../http";
 import * as cookies from "../assets/cookies";
 import {useRouter, useRoute} from "vue-router";
@@ -221,11 +220,11 @@ export default {
               username: loginData.username.trim(),
               password: loginData.password,
             }).then((res) => {
-              console.log(res)
               loading.value = false;
               if (res.res === 0) {
                 //要加模块名
-                store.dispatch('user/setUSER',jwt.decode(res.token).name)
+                cookies.setToken(res.token)
+                // store.dispatch('user/setUSER',jwt.decode(res.token).name)
                 //记住密码功能
                 if (remenberPassword.value) {
                   cookies.setUsername(loginData.username.trim());

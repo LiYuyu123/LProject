@@ -20,18 +20,17 @@
 import {onMounted, reactive, ref} from 'vue'
 import * as cookies from "../assets/cookies";
 import {useRouter} from "vue-router";
-import {useStore} from "vuex";
+import jwt from "jsonwebtoken";
 export default {
  setup(){
 
    const router = useRouter()
-   const store = useStore()
    const state = reactive({
      circleUrl:
          'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png',
    })
    //用户名字
-   const name = ref(store.state.user.user)
+   const name = jwt.decode(cookies.getToken()).name
    const  exit = () => {
      ElMessageBox.confirm('确定退出吗','退出',{
        confirmButtonText:'确定',
