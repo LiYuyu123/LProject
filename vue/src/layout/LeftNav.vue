@@ -5,6 +5,7 @@
         class="el-menu-vertical-demo"
         :default-active="defaultActive "
         text-color="#fff"
+        :unique-opened="true"
     >
       <div v-for="(i,index) in router" :key="index">
         <el-sub-menu :index="String(index)">
